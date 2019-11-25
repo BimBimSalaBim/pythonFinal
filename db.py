@@ -1,12 +1,12 @@
 class Student:
 
-    def __init__(self, firstName,lastName id):
+    def __init__(self, firstName,lastName):
         self.firstName = firstName
         self.lastName = lastName
         self.fullName = firstName + lastName
-        self.id = id
-        self.scores[]
-        self.quiz
+        self.id = 0
+        self.scores = 0
+        self.quiz = 0
 
     def add_quiz(self, quiz):
         self.quiz = quiz
@@ -41,6 +41,7 @@ def printEmpList(outputFile,empList):
     return
 
 inputFileOK = False
+students = []
 while (inputFileOK == False):
     try:
         inputFileName = input("Enter name of input file: ")
@@ -51,26 +52,13 @@ while (inputFileOK == False):
     else:
         print("Opening file", inputFileName, " for reading.")
         inputFileOK = True
-        studnets = []
+
         for line in inputFile:
-            students.append(student())
             if not any(char.isdigit() for char in line):
-                firstName,lastName = line.split(',')
-            first,last = n.split()
-            d1 = {'Name':last + ", "+ first,'Title':j,'salary':float(i)* float(bouns)+ float(i)}
-            emp.append(d1)
-        print("\t\tUnsorted List\n")
-        outputFile.write("\t\tUnsorted List\n\n")
-        printEmpList(outputFile,emp)
-        BubbleSort(emp)
-        print("\n\n\t\tAlphabetically sorted List")
-        outputFile.write("\n\t\tAlphabetacally sorted List\n\n")
-        printEmpList(outputFile,emp)
+                string = line.split(' ',1)
+                students.append(Student(string[0],string[1]))
 
         inputFile.close()
 
     finally:
-        if (inputFileOK == True):
-            print ("Successfully read information from file", inputFileName)
-        else:
-            print ("Unsuccessfully attempted to read information from file", inputFileName)
+        print(students[0].firstName)
