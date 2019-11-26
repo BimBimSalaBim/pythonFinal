@@ -72,7 +72,6 @@ while (inputFileOK == False):
                 students[i-1].id = id
                 students[i-1].quiz = quiz
                 score.append((tempLine.split(" ",2)[2]))
-                print(score)
                 for x in score:
                     students[i-1].add_score(x)
                 #print(score)
