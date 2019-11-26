@@ -14,23 +14,18 @@ class Student:
     def add_score(self, score):
         self.scores.append(score)
     #getter methods for class
-    def get_gradeAverage(self):
-        lowest = getLowest(self,self.scores)
-        if not self.isValid:
-            return -1
-        return lowest
     def get_grade(self):
         lowest = int(getLowest(self,self.scores))
         #check if there is an invalid grade
         if not self.isValid:
-            return 'I'
+            return '-1'
         testTotal = 0
         for x in self.scores:
             testTotal += int(x)
         testTotal -= lowest
         testTotal = testTotal/(len(self.scores)-1)
         total = (testTotal*.9)+((self.quiz)* .1)
-        return total
+        return round(total,2)
     def get_LetterGrade(self):
         grade = self.get_grade()
         if not self.isValid:
@@ -56,22 +51,29 @@ def getLowest(self,scores):
     return tempScore
 
 def reportPrint(students,className,classRoom):
+    SortList(students)
     print('CourseName:',className,end='')
-    print('ID:',className[-8:],end='')
+    classId = className.split(' ')
+    print('ID:',(''.join(classId[-2:])))
     print('ClassLocation:', classRoom,end='')
     print('\nName\t\t\tID\t\t\tAverage\t\tGrade\n')
     for i in range(len(students)):
         tab = '\t\t'
         if len(students[i].fullName) > 15:
             tab = '\t'
-        print('{}'.format(students[i].fullName)+tab+'{}\t\t{}\t\t{}'.format(students[i].id,students[i].get_gradeAverage(),students[i].get_LetterGrade()))
+        if len(students[i].fullName) < 8:
+            tab = '\t\t\t'
+        print('{}'.format(students[i].fullName)+tab+'{}\t\t{}\t\t{}'.format(students[i].id,students[i].get_grade(),students[i].get_LetterGrade()))
 def printList(students):
+    SortList(students)
     print('\nName\t\t\tAverage\t\tGrade\n')
     for i in range(len(students)):
         tab = '\t\t'
         if len(students[i].fullName) > 15:
             tab = '\t'
-        print('{}'.format(students[i].fullName)+tab+'{}\t\t{}'.format(students[i].get_gradeAverage(),students[i].get_LetterGrade()))
+        if len(students[i].fullName) < 8:
+            tab = '\t\t\t'
+        print('{}'.format(students[i].fullName)+tab+'{}\t\t{}'.format(students[i].get_grade(),students[i].get_LetterGrade()))
 
 def SortList(students):
     Sorted = False
@@ -100,23 +102,59 @@ def saveReport(students,className,classRoom):
         tab = '\t\t'
         if len(students[i].fullName) > 15:
             tab = '\t'
-        line4 ='{}'.format(students[i].fullName)+tab+'{}\t\t{}\t\t{}\n'.format(students[i].id,students[i].get_gradeAverage(),students[i].get_LetterGrade())
+        line4 ='{}'.format(students[i].fullName)+tab+'{}\t\t{}\t\t{}\n'.format(students[i].id,students[i].get_grade(),students[i].get_LetterGrade())
         outputFile.write(str(line4))
     outputFile.close()
 
 def editScores(students):
     name = input('What is the last name of the student you want to edit?\n')
-    for x in students:
+    for x in students[0]:
         if name == x.lastName.strip():
             i = 1
             print(str(i)+'- Quiz 1:',x.quiz)
             for score in x.scores:
                 i += 1
                 print(str(i)+'- Test '+str(i-1),score)
+            print(str(8)+'- Quit')
+            scoreToEdit = int(input('which score would you like to edit?\n'))
+            if scoreToEdit == 8:
+                break
+            if scoreToEdit > 0 and scoreToEdit < 8:
+                if scoreToEdit == 1:
+                    x.quiz = int(input('What is the updated value?\n'))
+                else:
+                    x.scores[scoreToEdit-2] = int(input('What is the updated value?\n'))
+                print('Score has been updated')
+            else:
+                print('Invalid choice please try again')
+                editScores(students)
+    writeFile(students)
 
-            scoreToEdit = input('which score would you like to edit?')
+def addStudent(students):
+    name = input('What is the name of the student?\n')
+    name = name.split(' ')
+    id = int(input('What is the ID of the student?\n'))
+    students[0].append(Student(name[0],(name[1]+' ')))
+    print('What is the quiz Score for '+name[0]+'?\n')
+    students[0][-1].id = id
+    students[0][-1].add_quiz(int(input()))
+    for i in range(6):
+        print('What is the Score for test '+str(i+1)+'?\n')
+        students[0][-1].add_score(int(input()))
+    writeFile(students)
+def writeFile(students):
+    outputFile = open(students[-1],'w+')
+    outputFile.write(students[1])
+    outputFile.write(students[2])
+    for i in range(len(students[0])):
+        tab = '\t\t'
+        if len(students[0][i].fullName) > 15:
+            tab = '\t'
+        outputFile.writelines(str(students[0][i].fullName)+'\n')
+        line = str(students[0][i].id)+' '+ str(students[0][i].quiz)+' '+str(students[0][i].scores[0])+' '+str(students[0][i].scores[1])+' '+str(students[0][i].scores[2])+' '+str(students[0][i].scores[3])+' '+str(students[0][i].scores[4])+' '+str(students[0][i].scores[5])+'\n'
+        outputFile.writelines(line)
 
-
+    outputFile.close()
 def fileImport():
     inputFileOK = False
     students = []
@@ -158,7 +196,7 @@ def fileImport():
 
             inputFile.close()
             SortList(students)
-            return students,className,classRoom
+            return students,className,classRoom,inputFileName
 
 def menu():
     print('\n------------------------------\n1: Print Report\n2: Print Student List\n3: Save Report to File\n4: Edit Scores\n5: Add Student\n6: Quit\n------------------------------')
@@ -176,8 +214,8 @@ def main():
         elif input == 3:
             saveReport(students[0],students[1],students[2])
         elif input == 4:
-            editScores(students[0])
+            editScores(students)
         elif input == 5:
-            addStudent()
+            addStudent(students)
 if __name__ == '__main__':
     main()
