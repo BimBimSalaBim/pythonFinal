@@ -5,15 +5,15 @@ class Student:
         self.lastName = lastName
         self.fullName = firstName + lastName
         self.id = 0
-        self.scores = 0
+        self.scores = []
         self.quiz = 0
 
     def add_quiz(self, quiz):
         self.quiz = quiz
-    def add_scores(self, score):
-        self.score.append(trick)
+    def add_score(self, score):
+        self.scores.append(score)
     def get_gradeAverage(self):
-        return self.quiz
+        return self.scores
 
 
 def BubbleSort(dicList):
@@ -42,6 +42,10 @@ def printEmpList(outputFile,empList):
 
 inputFileOK = False
 students = []
+className = ''
+classRoom = ''
+prevLine = ''
+i = 0
 while (inputFileOK == False):
     try:
         inputFileName = input("Enter name of input file: ")
@@ -52,13 +56,28 @@ while (inputFileOK == False):
     else:
         print("Opening file", inputFileName, " for reading.")
         inputFileOK = True
-
         for line in inputFile:
-            if not any(char.isdigit() for char in line):
+            if prevLine == '':
+                className = line
+            elif prevLine == className:
+                classRoom = line
+            elif not any(char.isdigit() for char in line.strip()):
                 string = line.split(' ',1)
                 students.append(Student(string[0],string[1]))
+                i +=1
+            else:
+                score = []
+                tempLine = line
+                id,quiz = line.split(' ',1)
+                students[i-1].id = id
+                students[i-1].quiz = quiz
+                score.append((tempLine.split(" ",2)[2]))
+                print(score)
+                for x in score:
+                    students[i-1].add_score(x)
+                #print(score)
+            prevLine = line
 
         inputFile.close()
 
-    finally:
-        print(students[0].firstName)
+print(students[1].get_gradeAverage())
