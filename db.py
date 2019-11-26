@@ -85,10 +85,23 @@ def SortList(students):
                          students[i] = students[i+1]
                          students[i+1] = temp
                          Sorted = False
+
 def saveReport(students,className,classRoom):
+    line1 = 'CourseName:',className
+    line2 = 'ID:',className[-8:]
+    line3 = 'ClassLocation:', classRoom
     outputName = input('What do you want the name of the file to be?\n')
     outputFile = open(outputName,'w')
-    outputFile.write(reportPrint(students,className,classRoom))
+    outputFile.write(str(line1))
+    outputFile.write(str(line2))
+    outputFile.write(str(line3))
+    outputFile.write('\nName\t\t\tID\t\t\tAverage\t\tGrade\n')
+    for i in range(len(students)):
+        tab = '\t\t'
+        line4 ='{}'.format(students[i].fullName)+tab+'{}\t\t{}\t\t{}'.format(students[i].id,students[i].get_gradeAverage(),students[i].get_LetterGrade())
+        if len(students[i].fullName) > 15:
+            tab = '\t'
+        outputFile.write(str(line4))
     outputFile.close()
 
 # def printEmpList(outputFile,empList):
