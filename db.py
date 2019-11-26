@@ -87,32 +87,36 @@ def SortList(students):
                          Sorted = False
 
 def saveReport(students,className,classRoom):
-    line1 = 'CourseName:',className
-    line2 = 'ID:',className[-8:]
-    line3 = 'ClassLocation:', classRoom
+    line1 = str('CourseName: '+className)
+    line2 = str('ID: '+className[-8:])
+    line3 = str('ClassLocation: '+ classRoom)
     outputName = input('What do you want the name of the file to be?\n')
     outputFile = open(outputName,'w')
-    outputFile.write(str(line1))
-    outputFile.write(str(line2))
-    outputFile.write(str(line3))
+    outputFile.write(line1)
+    outputFile.write(line2)
+    outputFile.write(line3)
     outputFile.write('\nName\t\t\tID\t\t\tAverage\t\tGrade\n')
     for i in range(len(students)):
         tab = '\t\t'
-        line4 ='{}'.format(students[i].fullName)+tab+'{}\t\t{}\t\t{}'.format(students[i].id,students[i].get_gradeAverage(),students[i].get_LetterGrade())
         if len(students[i].fullName) > 15:
             tab = '\t'
+        line4 ='{}'.format(students[i].fullName)+tab+'{}\t\t{}\t\t{}\n'.format(students[i].id,students[i].get_gradeAverage(),students[i].get_LetterGrade())
         outputFile.write(str(line4))
     outputFile.close()
 
-# def printEmpList(outputFile,empList):
-#     outputFile.write("%-25s%-15s%-15s\n"%("Name","Job","Income"))
-#     outputFile.write("%-55s\n" %(55*'-'))
-#     for index in range(len(empList)):
-#                print("%-2dName: %-25sJob: %-15sIncome $%-15.2f"
-#                     %(index, empList[index]['Name'],empList[index]['Title'],empList[index]['salary']))
-#                outputFile.write("%-25s%-15s $%-15.2f\n" %
-#                                 (empList[index]['Name'],empList[index]['Title'],empList[index]['salary']))
-#     return
+def editScores(students):
+    name = input('What is the last name of the student you want to edit?\n')
+    for x in students:
+        if name == x.lastName.strip():
+            i = 1
+            print(str(i)+'- Quiz 1:',x.quiz)
+            for score in x.scores:
+                i += 1
+                print(str(i)+'- Test '+str(i-1),score)
+
+            scoreToEdit = input('which score would you like to edit?')
+
+
 def fileImport():
     inputFileOK = False
     students = []
@@ -172,7 +176,7 @@ def main():
         elif input == 3:
             saveReport(students[0],students[1],students[2])
         elif input == 4:
-            editScores()
+            editScores(students[0])
         elif input == 5:
             addStudent()
 if __name__ == '__main__':
