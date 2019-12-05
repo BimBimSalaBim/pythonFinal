@@ -132,12 +132,47 @@ def saveReport(students,className,classRoom):
     outputFile.write(str(last))
     outputFile.close()
 
-def editScores(students):
-    try:
-        name = input('What is the last name of the student you want to edit?\n')
-    except:
-        print('Invalid entry, please try again')
-        editScores(students)
+def partialSearch(student, name):
+    partialMatch = []
+    matchFound = False
+    for x in student[0]:
+        if name.strip().lower() in x.lastName.strip().lower():
+            partialMatch.append(x.lastName)
+            matchFound = True
+    if matchFound:
+        i = 1
+        print('Did you mean any of these names?\n')
+        print('0 - return\n')
+        for names in partialMatch:
+            print(i,'-',names)
+            i = i+1
+        number = int(input('Please choose a number.\n'))
+        valid = True
+        if number > i-1 or number < 0:
+            valid = False
+        while valid == False:
+            print('please choose a valid number. ')
+            number = int(input('Please choose a number.\n'))
+            if number <= i-1 and number >= 0:
+                valid = True
+        if number == 0:
+            return
+        else:
+            try:
+                editScores(student,partialMatch[number-1])
+            except:
+                print('Something went wrong.')
+                return
+    else:
+        print('There are no partial matches to your search.')
+def editScores(students,name):
+    name = name
+    if name ==  '':
+        try:
+            name = input('What is the last name of the student you want to edit? You can enter part of the name to do a partial seach.(more than 3 characters.)\n')
+        except:
+            print('Invalid entry, please try again')
+            editScores(students)
     found = False
     #go through the list of students and see if the names match
     for x in students[0]:
@@ -177,7 +212,11 @@ def editScores(students):
     if found:
         print('Score hase been updated')
     else:
-        print(name,'is not in the list.')
+        if len(name) >= 3:
+            print(name,'is not in the list. Trying a partial search.')
+            partialSearch(students,name)
+        else:
+            print('No Matches Found.\n')
 
     #update the score in the file
     writeFile(students)
@@ -350,7 +389,7 @@ def main():
         elif input == 4:
             saveReport(students[0],students[1],students[2])
         elif input == 5:
-            editScores(students)
+            editScores(students,'')
         elif input == 6:
             addStudent(students)
         elif input == 7:
