@@ -21,7 +21,7 @@ class Student:
                 tempScore = int(x)
         return tempScore
     def get_grade(self):
-        lowest = int(getLowest(self,self.scores))
+        lowest = int(self.getLowest(self.scores))
         #make sure that the grade is valid
         if self.quiz < 0:
             return '-1'
@@ -175,9 +175,6 @@ def editScores(students):
                 editScores(students)
     if name == 'q':
         return
-    else:
-        print('Invalid choice please try again')
-        editScores(students)
     #update the score in the file
     writeFile(students)
 
@@ -212,7 +209,9 @@ def printStudent(students):
         printStudent(students)
 
 def addStudent(students):
-    name = input('What is the name of the student?\n')
+    name = input('What is the name of the student? Press \'q\' to return.\n')
+    if name == 'q':
+        return
     name = name.split(' ',1)
     try:
         #make sure it is a valid entry
@@ -230,7 +229,8 @@ def addStudent(students):
                 print('What is the Score for test '+str(i+1)+'?\n')
                 students[0][-1].add_score(int(input()))
         else:
-            print("Last name already in report")
+            print("Last name already in report, please try again or press 'q' to return.")
+            addStudent(students)
     except:
         print('Invalid entry, please try again')
         addStudent(students)
