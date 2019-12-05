@@ -1,61 +1,55 @@
-class Student:
-    #init student vars
-    def __init__(self, firstName,lastName):
-        self.firstName = firstName
-        self.lastName = lastName
-        self.fullName = firstName +' '+ lastName[:-1]
-        self.id = 0
-        self.scores = []
-        self.quiz = 0
-    #setter methods for calss
-    def add_quiz(self, quiz):
-        self.quiz = quiz
-    def add_score(self, score):
-        self.scores.append(score)
-    #getter methods for class
-    def getLowest(self,scores):
-        #finds the lowest score of the tests
-        tempScore = int(scores[0])
-        for x in scores:
-            if int(x) < tempScore:
-                tempScore = int(x)
-        return tempScore
-    def get_grade(self):
-        lowest = int(self.getLowest(self.scores))
-        #make sure that the grade is valid
-        if self.quiz < 0:
-            return '-1'
-        testTotal = 0
-        #add all the scores togeather and subtract the lowest one
-        for x in self.scores:
-            if x < 0:
-                return '-1'
-            testTotal += int(x)
-        #calculate the grade based off the scale
-        testTotal -= lowest
-        testTotal = testTotal/(len(self.scores)-1)
-        total = (testTotal*.9)+((self.quiz)* .1)
-        return round(total,2)
-    def get_LetterGrade(self):
-        grade = self.get_grade()
-        if grade == '-1':
-            return 'I'
-        if grade > 90:
-            return 'A'
-        elif grade < 90 and grade > 80:
-            return 'B'
-        elif grade < 80 and grade > 70:
-            return 'C'
-        elif grade < 70 and grade > 60:
-            return 'D'
-        else:
-            return 'F'
 
 className = ''
 classRoom = ''
 studentList = {}
 testList = []
+isSorted = False
+fileName = ''
 
+def get_LetterGrade(grade):
+    if grade == '-1':
+        return 'I'
+    if grade > 90:
+        return 'A'
+    elif grade < 90 and grade > 80:
+        return 'B'
+    elif grade < 80 and grade > 70:
+        return 'C'
+    elif grade < 70 and grade > 60:
+        return 'D'
+    else:
+        return 'F'
+def getLowest(i):
+    #finds the lowest score of the tests
+    tempScore = studentList[i][3][0]
+    for x in studentList[i][3]:
+        if int(x) < tempScore:
+            tempScore = int(x)
+    return tempScore
+def get_grade(i):
+    lowest = getLowest(i)
+    #make sure that the grade is valid
+    if studentList[i][2] < 0:
+        return '-1'
+    testTotal = 0
+    #add all the scores togeather and subtract the lowest one
+    for x in studentList[i][3]:
+        if x < 0:
+            return '-1'
+        testTotal += int(x)
+    #calculate the grade based off the scale
+    testTotal -= lowest
+    testTotal = testTotal/(len(studentList[i][3])-1)
+    total = (testTotal*.9)+((studentList[i][2])* .1)
+    return round(total,2)
+
+
+
+def sortState():
+    list = studentList
+    if isSorted == True:
+        list = sorted(studentList, key=lambda x: x.lower())
+    return list
 
 def reportPrint():
     #SortList(students)
@@ -65,42 +59,35 @@ def reportPrint():
     print('ID:',(' '.join(classId[-2:])))
     print('ClassLocation:', classRoom,end='')
     print('\nName\t\t\tID\t\t\tAverage\t\tGrade\n')
-    for i in studentList:
-        if i != ' ':
+    for i in sortState():
+        if studentList[i][0] != ' ':
             tab = '\t\t'
-            if len(i) > 15:
+            if len(studentList[i][0]) > 15:
                 tab = '\t'
-            if len(i) < 8:
+            if len(studentList[i][0]) < 8:
                 tab = '\t\t\t'
-            print(studentList[i][0])
+            grade = get_grade(i)
+            print('{}'.format(studentList[i][0])+tab+'{}\t\t{}\t\t{}'.format(studentList[i][1],grade,get_LetterGrade(grade)))
 
-def printList(students):
+
+def printList():
     #SortList(students)
     #basic formated print
     print('\nName\t\t\tAverage\t\tGrade\n')
-    for i in studentList:
-        tab = '\t\t'
-        if len(i) > 15:
-            tab = '\t'
-        if len(students[i].fullName) < 8:
-            tab = '\t\t\t'
-        print('{}'.format(students[i].fullName)+tab+'{}\t\t{}'.format(students[i].get_grade(),students[i].get_LetterGrade()))
+    list = studentList
+    for i in sortState():
+        if studentList[i][0] != ' ':
+            tab = '\t\t'
+            if len(studentList[i][0]) > 15:
+                tab = '\t'
+            if len(studentList[i][0]) < 8:
+                tab = '\t\t\t'
+            grade = get_grade(i)
+            print('{}'.format(studentList[i][0])+tab+'{}\t\t{}'.format(grade,get_LetterGrade(grade)))
 
-def SortList(students):
-    Sorted = False
-    size = len(students)
-    while not Sorted:
-        Sorted = True
-        size -= 1 ;
-        for i in range(size):
-                     #if the prev name is bigger than the next then swap
-                     if students[i].lastName.lower() > students[i+1].lastName.lower():
-                         temp = students[i]
-                         students[i] = students[i+1]
-                         students[i+1] = temp
-                         Sorted = False
 
-def saveReport(students,className,classRoom):
+
+def saveReport():
     #set the basic vars
     line1 = str('CourseName: '+className)
     courseId = className.split(" ")[-2:]
@@ -121,37 +108,39 @@ def saveReport(students,className,classRoom):
     avg = 0
     k = 0
     #write all the Students line by line
-    for i in range(len(students)):
-        tab = '\t\t\t\t'
-        studentId = '***-**-'+str(students[i].id[-4:])
-        if len(students[i].fullName) > 15:
-            tab = '\t'
-        line5 = "%-25s%-15s %-15.0f %-25s\n"%(students[i].fullName,studentId,float(students[i].get_grade()),students[i].get_LetterGrade())
-        if students[i].get_grade() != '-1':
-            k += 1
-            avg += float(students[i].get_grade())
-            line5 = "%-25s%-15s %-15.2f %-25s\n"%(students[i].fullName,studentId,float(students[i].get_grade()),students[i].get_LetterGrade())
+    list = studentList
+    for i in sortState():
+        if studentList[i][0] != ' ':
+            tab = '\t\t\t\t'
+            studentId = '***-**-'+str(studentList[i][1])[-4:]
+            if len(studentList[i][0]) > 15:
+                tab = '\t'
+            line5 = "%-25s%-15s %-15.0f %-25s\n"%(studentList[i][0],studentId,float(get_grade(i)),get_LetterGrade(get_grade(i)))
+            if get_grade(i) != '-1':
+                k += 1
+                avg += float(get_grade(i))
+                line5 = "%-25s%-15s %-15.2f %-25s\n"%(studentList[i][0],studentId,float(get_grade(i)),get_LetterGrade(get_grade(i)))
 
-        outputFile.write(str(line5))
+            outputFile.write(str(line5))
     #write the avg scores
     avg = round((avg/k),2)
     last = '\nClass Average for '+str(k) +' student(s): '+str(avg)
     outputFile.write(str(last))
     outputFile.close()
 
-def editScores(students):
+def editScores():
     try:
         name = input('What is the last name of the student you want to edit?\n')
     except:
         print('Invalid entry, please try again')
-        editScores(students)
+        editScores()
     #go through the list of students and see if the names match
-    for x in students[0]:
-        if name.strip().lower() == x.lastName.strip().lower():
+    for x in sortState():
+        if name.strip().lower() == x.lower():
             i = 1
             #print the scores so the user knows what to update and what the prev values are
-            print(str(i)+'- Quiz 1:',x.quiz)
-            for score in x.scores:
+            print(str(i)+'- Quiz 1:',studentList[x][2])
+            for score in studentList[x][3]:
                 i += 1
                 print(str(i)+'- Test '+str(i-1),score)
             print(str(8)+'- Quit')
@@ -160,61 +149,64 @@ def editScores(students):
                 scoreToEdit = int(input('which score would you like to edit? Enter \'q\' to go back.\n'))
             except:
                 print('Invalid choice please try again')
-                editScores(students)
+                editScores()
             if scoreToEdit == 8:
                 break
             elif scoreToEdit > 0 and scoreToEdit < 8:
                 try:
                     #update the score in the student class
                     if scoreToEdit == 1:
-                        x.add_quiz( int(input('What is the updated value?\n')))
+                        studentList[x][2] =( int(input('What is the updated value?\n')))
                     else:
-                        x.scores[scoreToEdit-2] = int(input('What is the updated value?\n'))
+                        studentList[x][3][scoreToEdit-2] = int(input('What is the updated value?\n'))
                 except:
                     print('Invalid please try again')
-                    editScores(students)
+                    editScores()
                 print('Score has been updated')
                 break
             else:
                 print('Invalid choice please try again')
-                editScores(students)
+                editScores()
     if name == 'q':
         return
     #update the score in the file
-    writeFile(students)
+    writeFile()
 
-def inList(name,students):
+def inList(name):
     #check if the student is in the list
-    for i in range(len(students)):
-        if name.strip() == students[i].lastName.strip():
+    for i in studentList:
+        if name.strip().lower() == i.strip().lower():
             return True
     return False
 
-def printStudent(students):
+def printStudent():
     try:
         name = input('What is the last name of the student you want to view? Enter \'q\' to go back.\n')
     except:
         print('Invalid entry, please try again')
-        editScores(students)
-    for x in range(len(students)):
-        #find the student in the list and print the information
-        if name.strip().lower() == students[x].lastName.strip().lower():
-            print("\n%-25s%-15s %-15s %-25s\n"%('Name','ID','Average','Grade'))
-            print("%-25s%-15s %-15.0f %-25s\n"%(students[x].fullName,students[x].id,float(students[x].get_grade()),students[x].get_LetterGrade()))
-            i = 1
-            print(' Quiz 1:',students[x].quiz)
-            for score in students[x].scores:
-                i += 1
-                print(' Test '+str(i-1),score)
-            break
+        printStudent()
     if name == 'q':
         return
-    else:
-        print('Invalid choice please try again')
-        printStudent(students)
+    found = False
+    for x in studentList:
+        #find the student in the list and print the information
+        if name.strip().lower() == x.strip().lower():
+            print("\n%-25s%-15s %-15s %-25s\n"%('Name','ID','Average','Grade'))
+            print("%-25s%-15s %-15.0f %-25s\n"%(studentList[x][0],studentList[x][1],float(get_grade(x)),get_LetterGrade(get_grade(x))))
+            i = 1
+            print(' Quiz 1:',studentList[x][2])
+            for score in studentList[x][3]:
+                i += 1
+                print(' Test '+str(i-1)+':',score)
+            found = True
+            break
+    if not found:
+        print('There is no student with that name, please try again.')
+        printStudent()
 
-def addStudent(students):
-    name = input('What is the name of the student? Press \'q\' to return.\n')
+
+def addStudent():
+    name = input('What is the full name of the student? Press \'q\' to return.\n')
     if name == 'q':
         return
     name = name.split(' ',1)
@@ -223,54 +215,57 @@ def addStudent(students):
         if len(name[1]) < 1:
             raise Exception('Invalid entry, please try again')
         #first check if the last name if in the list or not
-        if not inList(name[1],students[0]):
+        if not inList(name[1]):
             #if not in the list then ask the user for all the other information and add it accordingly
             id = int(input('What is the ID of the student?\n'))
-            students[0].append(Student(name[0],(name[1]+' ')))
-            print('What is the quiz Score for '+name[0]+'?\n')
-            students[0][-1].id = id
-            students[0][-1].add_quiz(int(input()))
+            quiz = (int(input('What is the quiz Score for '+name[0]+'?\n')))
+            testscores = []
             for i in range(6):
                 print('What is the Score for test '+str(i+1)+'?\n')
-                students[0][-1].add_score(int(input()))
+                score = int(input())
+                testscores.append(score)
+            studentList[str(name[1])] = [' '.join(name),id,quiz,testscores]
+            print(' '.join(name),'has been added to the list.')
         else:
             print("Last name already in report, please try again or press 'q' to return.")
-            addStudent(students)
+            addStudent()
     except:
-        print('Invalid entry, please try again')
-        addStudent(students)
+        print('Invalid entry, please try again 1')
+        addStudent()
     #save the new student to the existing file
-    writeFile(students)
+    writeFile()
 
-def removeStudent(students):
+def removeStudent():
     name = input('What is the last name of the student?\n')
     isInList = False
     #check if the name is in the students list
-    for i in range(len(students)):
-        if name.strip() == students[i].lastName.strip():
+    for i in sortState():
+        if name.strip().lower() == i.strip().lower():
             #if it is then delete it and stop the loop
-            students.remove(students[i])
+            del studentList[i]
             isInList = True
             break
     if isInList:
         print(name,'has been removed')
+        writeFile()
     else:
         print(name,'is not in the list')
 
-def writeFile(students):
+def writeFile():
     #open the file with write and append premissions
-    outputFile = open(students[-1],'w+')
+    outputFile = open(fileName,'w+')
     #write the first 2 lines
-    outputFile.write(students[1])
-    outputFile.write(students[2])
+    outputFile.write(className)
+    outputFile.write(classRoom)
     #write all the other lines (students)
-    for i in range(len(students[0])):
-        tab = '\t\t'
-        if len(students[0][i].fullName) > 15:
-            tab = '\t'
-        outputFile.writelines(str(students[0][i].fullName)+'\n')
-        line = str(students[0][i].id)+' '+ str(students[0][i].quiz)+' '+str(students[0][i].scores[0])+' '+str(students[0][i].scores[1])+' '+str(students[0][i].scores[2])+' '+str(students[0][i].scores[3])+' '+str(students[0][i].scores[4])+' '+str(students[0][i].scores[5])+'\n'
-        outputFile.writelines(line)
+    for i in sortState():
+        if studentList[i][0] != ' ':
+            tab = '\t\t'
+            if len(studentList[i][0]) > 15:
+                tab = '\t'
+            outputFile.writelines(str(studentList[i][0])+'\n')
+            line = str(studentList[i][1])+' '+ str(studentList[i][2])+' '+str(studentList[i][3][0])+' '+str(studentList[i][3][1])+' '+str(studentList[i][3][2])+' '+str(studentList[i][3][3])+' '+str(studentList[i][3][4])+' '+str(studentList[i][3][5])+'\n'
+            outputFile.writelines(line)
 
     outputFile.close()
 def fileImport():
@@ -279,6 +274,7 @@ def fileImport():
     students = []
     global className
     global classRoom
+    global fileName
     prevLine = ''
 
     i = 0
@@ -292,6 +288,7 @@ def fileImport():
             print("File", inputFileName, "could not be opened\n")
         else:
             try:
+                fileName = inputFileName
                 studentFirst = ''
                 studentLast = ''
                 studentId = 0
@@ -329,8 +326,8 @@ def fileImport():
                                 tests.append(int(x))
                     if prevLine != '':
                         fullName = studentFirst +' '+ studentLast[:-1]
-                        list = [studentId,quiz,tests]
-                        studentList[fullName] =list
+                        list = [fullName,studentId,quiz,tests]
+                        studentList[studentLast[:-1]] =list
                     prevLine = line
 
             except:
@@ -358,20 +355,22 @@ def main():
         if input == 1:
             reportPrint()
         elif input == 2:
-            printList(students[0])
+            printList()
         elif input == 3:
-            printStudent(students[0])
+            printStudent()
         elif input == 4:
-            saveReport(students[0],students[1],students[2])
+            saveReport()
         elif input == 5:
-            editScores(students)
+            editScores()
         elif input == 6:
-            addStudent(students)
+            addStudent()
         elif input == 7:
-            SortList(students[0])
-            printList(students[0])
+            global isSorted
+            isSorted = True
+            writeFile()
+            printList()
         elif input == 8:
-            removeStudent(students[0])
+            removeStudent()
         elif input == 9:
             break
         else:

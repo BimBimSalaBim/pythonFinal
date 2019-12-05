@@ -190,7 +190,7 @@ def printStudent(students):
         name = input('What is the last name of the student you want to view? Enter \'q\' to go back.\n')
     except:
         print('Invalid entry, please try again')
-        editScores(students)
+        printStudent(students)
     for x in range(len(students)):
         #find the student in the list and print the information
         if name.strip().lower() == students[x].lastName.strip().lower():
