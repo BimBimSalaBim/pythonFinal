@@ -1,4 +1,4 @@
-
+#global vars used to store all the data inputed
 className = ''
 classRoom = ''
 studentList = {}
@@ -6,6 +6,7 @@ testList = []
 isSorted = False
 fileName = ''
 
+#take an int and returns the letter grade
 def get_LetterGrade(grade):
     if grade == '-1':
         return 'I'
@@ -19,14 +20,20 @@ def get_LetterGrade(grade):
         return 'D'
     else:
         return 'F'
+
+#finds the lowest score of the tests
 def getLowest(i):
-    #finds the lowest score of the tests
+    #use the first score as a base to start checking
     tempScore = studentList[i][3][0]
+    #see if there is a score lower than the temp and if so set temp to that value
     for x in studentList[i][3]:
         if int(x) < tempScore:
             tempScore = int(x)
     return tempScore
+
+#calculate the grade for a given student
 def get_grade(i):
+    #find the lowest score (used later as the drop score)
     lowest = getLowest(i)
     #make sure that the grade is valid
     if studentList[i][2] < 0:
@@ -43,22 +50,23 @@ def get_grade(i):
     total = (testTotal*.9)+((studentList[i][2])* .1)
     return round(total,2)
 
-
-
+#check if the user has decided to sort the list
 def sortState():
     list = studentList
     if isSorted == True:
+        #found this expression on stackoverflow by Johannes Charra
         list = sorted(studentList, key=lambda x: x.lower())
     return list
 
+#print how a student is doing in the class
 def reportPrint():
-    #SortList(students)
     #detailed report print for each student
     print('CourseName:',className,end='')
     classId = className.split(' ')
     print('ID:',(' '.join(classId[-2:])))
     print('ClassLocation:', classRoom,end='')
     print('\nName\t\t\tID\t\t\tAverage\t\tGrade\n')
+    #go through each student and print the name, id, avg score, and letter grade
     for i in sortState():
         if studentList[i][0] != ' ':
             tab = '\t\t'
@@ -69,10 +77,8 @@ def reportPrint():
             grade = get_grade(i)
             print('{}'.format(studentList[i][0])+tab+'{}\t\t{}\t\t{}'.format(studentList[i][1],grade,get_LetterGrade(grade)))
 
-
+#SortList(students)
 def printList():
-    #SortList(students)
-    #basic formated print
     print('\nName\t\t\tAverage\t\tGrade\n')
     list = studentList
     for i in sortState():
@@ -85,8 +91,7 @@ def printList():
             grade = get_grade(i)
             print('{}'.format(studentList[i][0])+tab+'{}\t\t{}'.format(grade,get_LetterGrade(grade)))
 
-
-
+#save a formated report of the class to user named file
 def saveReport():
     #set the basic vars
     line1 = str('CourseName: '+className)
@@ -111,6 +116,7 @@ def saveReport():
     list = studentList
     for i in sortState():
         if studentList[i][0] != ' ':
+            #formating
             tab = '\t\t\t\t'
             studentId = '***-**-'+str(studentList[i][1])[-4:]
             if len(studentList[i][0]) > 15:
@@ -128,6 +134,7 @@ def saveReport():
     outputFile.write(str(last))
     outputFile.close()
 
+#edit a score in the student list then save it to the main file
 def editScores():
     try:
         name = input('What is the last name of the student you want to edit?\n')
@@ -172,13 +179,14 @@ def editScores():
     #update the score in the file
     writeFile()
 
+#check if the student is in the list
 def inList(name):
-    #check if the student is in the list
     for i in studentList:
         if name.strip().lower() == i.strip().lower():
             return True
     return False
 
+#ask user for a last name and then print all the information for that name
 def printStudent():
     try:
         name = input('What is the last name of the student you want to view? Enter \'q\' to go back.\n')
@@ -204,7 +212,7 @@ def printStudent():
         print('There is no student with that name, please try again.')
         printStudent()
 
-
+#add a student to the list and save it to the main file
 def addStudent():
     name = input('What is the full name of the student? Press \'q\' to return.\n')
     if name == 'q':
@@ -220,10 +228,12 @@ def addStudent():
             id = int(input('What is the ID of the student?\n'))
             quiz = (int(input('What is the quiz Score for '+name[0]+'?\n')))
             testscores = []
+            #get the values of the test scores
             for i in range(6):
                 print('What is the Score for test '+str(i+1)+'?\n')
                 score = int(input())
                 testscores.append(score)
+            #add all the data to the studentList dict
             studentList[str(name[1])] = [' '.join(name),id,quiz,testscores]
             print(' '.join(name),'has been added to the list.')
         else:
@@ -235,6 +245,7 @@ def addStudent():
     #save the new student to the existing file
     writeFile()
 
+#ask user for a last name and if it is in the dict, remove it and update the main file
 def removeStudent():
     name = input('What is the last name of the student?\n')
     isInList = False
@@ -251,6 +262,7 @@ def removeStudent():
     else:
         print(name,'is not in the list')
 
+#output the formated report
 def writeFile():
     #open the file with write and append premissions
     outputFile = open(fileName,'w+')
@@ -268,6 +280,8 @@ def writeFile():
             outputFile.writelines(line)
 
     outputFile.close()
+
+#open a user defined file and grab the data from it
 def fileImport():
     ## vars used for return
     inputFileOK = False
@@ -342,6 +356,7 @@ def fileImport():
                 fileImport()
             return students,className,classRoom,inputFileName
 
+#main menu output
 def menu():
     print('\n------------------------------\n1: Print Report\n2: Print Student List\n3: View Student\n4: Save Report to File\n5: Edit Scores\n6: Add Student\n7: Sort Students\n8: Remove Student\n9: Quit\n------------------------------')
     return (int(input('What would you like to do?\n')))

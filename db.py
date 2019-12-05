@@ -1,3 +1,4 @@
+#class of students that holds all the information per student
 class Student:
     #init student vars
     def __init__(self, firstName,lastName):
@@ -51,10 +52,8 @@ class Student:
         else:
             return 'F'
 
-
-
+#output of all the students and their grades
 def reportPrint(students,className,classRoom):
-    #SortList(students)
     #detailed report print for each student
     print('CourseName:',className,end='')
     classId = className.split(' ')
@@ -70,7 +69,6 @@ def reportPrint(students,className,classRoom):
         print('{}'.format(students[i].fullName)+tab+'{}\t\t{}\t\t{}'.format(students[i].id,students[i].get_grade(),students[i].get_LetterGrade()))
 
 def printList(students):
-    #SortList(students)
     #basic formated print
     print('\nName\t\t\tAverage\t\tGrade\n')
     for i in range(len(students)):
@@ -268,6 +266,7 @@ def writeFile(students):
         outputFile.writelines(line)
 
     outputFile.close()
+
 def fileImport():
     ## vars used for return
     inputFileOK = False
