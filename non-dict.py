@@ -142,6 +142,7 @@ def editScores():
         print('Invalid entry, please try again')
         editScores()
     #go through the list of students and see if the names match
+    found = False
     for x in sortState():
         if name.strip().lower() == x.lower():
             i = 1
@@ -169,13 +170,18 @@ def editScores():
                 except:
                     print('Invalid please try again')
                     editScores()
-                print('Score has been updated')
+                found = True
                 break
             else:
                 print('Invalid choice please try again')
                 editScores()
     if name == 'q':
         return
+    if found:
+        print('Score hase been updated')
+    else:
+        print(name,'is not in the list.')
+
     #update the score in the file
     writeFile()
 
